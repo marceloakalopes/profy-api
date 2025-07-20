@@ -25,6 +25,7 @@ class Experience(BaseModel):
     startDate: str | None = None
     endDate: str | None = None
     type: EmploymentType | None = EmploymentType.FULL_TIME
+    description: str | None = ""
 
 class Education(BaseModel):
     school: str | None = None

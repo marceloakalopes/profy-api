@@ -70,6 +70,11 @@
                 ],
                 "default": "full-time",
                 "description": "Type of employment"
+              },
+              "description": {
+                "type": ["string", "null"],
+                "description": "Description of responsibilities and achievements",
+                "default": ""
               }
             }
           },

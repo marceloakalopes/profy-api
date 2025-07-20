@@ -54,6 +54,7 @@ class PromptBuilder:
         
         3. Field-Specific Rules:
            - Experience type must be one of: full-time, part-time, freelance, contract, internship, volunteer
+           - Experience description should ONLY include text that is present in the original resume. If no description is found, leave it as an empty string
            - Skills should be individual technologies/competencies, not descriptions
            - Social URLs must be valid and include platform name
            - Project links must be valid URLs
@@ -67,6 +68,9 @@ class PromptBuilder:
         ## Experience
         **Software Engineer** at *TechCorp*
         2020-01 to Present
+        
+        Led development of microservices architecture
+        Implemented CI/CD pipeline
         ```
         
         Expected Output:
@@ -83,7 +87,8 @@ class PromptBuilder:
                 "startDate": "2020-01-01",
                 "endDate": "2024-03-21",
                 "type": "full-time",
-                "location": "Not Specified"
+                "location": "Not Specified",
+                "description": "Led development of microservices architecture\\nImplemented CI/CD pipeline"
             }}]
             // ... other required fields with appropriate defaults
         }}
@@ -97,6 +102,7 @@ class PromptBuilder:
         3. Invalid URLs in project links or social profiles
         4. Inconsistent date ranges or overlapping experiences
         5. Skills that are phrases instead of individual technologies
+        6. Adding experience descriptions that are not in the original resume text
         
         Return ONLY valid JSON matching the schema. No additional text or explanations."""
 
