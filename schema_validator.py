@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import List
 from enum import Enum
-from pydantic import BaseModel, HttpUrl
+from pydantic import BaseModel
 import json
 from pathlib import Path
 
