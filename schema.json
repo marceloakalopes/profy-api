@@ -1,0 +1,166 @@
+{
+    "name": "resume_data",
+    "description": "A user's full resume data",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": ["integer", "null"],
+          "description": "Unique identifier for the resume"
+        },
+        "username": {
+          "type": ["string", "null"],
+          "description": "Username for the resume owner"
+        },
+        "imageUrl": {
+          "type": ["string", "null"],
+          "description": "URL to user's profile image"
+        },
+        "name": {
+          "type": ["string", "null"],
+          "description": "Full name of the person",
+          "default": "Anonymous"
+        },
+        "headline": {
+          "type": ["string", "null"],
+          "description": "Professional headline or title",
+          "default": ""
+        },
+        "about": {
+          "type": ["string", "null"],
+          "description": "Professional summary or bio",
+          "default": ""
+        },
+        "experience": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "company": {
+                "type": ["string", "null"],
+                "description": "Company name"
+              },
+              "title": {
+                "type": ["string", "null"],
+                "description": "Job title"
+              },
+              "location": {
+                "type": ["string", "null"],
+                "description": "Job location",
+                "default": "Not specified"
+              },
+              "startDate": {
+                "type": ["string", "null"],
+                "description": "Start date in YYYY-MM-DD format"
+              },
+              "endDate": {
+                "type": ["string", "null"],
+                "description": "End date in YYYY-MM-DD format"
+              },
+              "type": {
+                "type": ["string", "null"],
+                "enum": [
+                  "full-time",
+                  "part-time",
+                  "freelance",
+                  "contract",
+                  "internship",
+                  "volunteer",
+                  null
+                ],
+                "default": "full-time",
+                "description": "Type of employment"
+              }
+            }
+          },
+          "default": []
+        },
+        "education": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "school": {
+                "type": ["string", "null"],
+                "description": "School name"
+              },
+              "degree": {
+                "type": ["string", "null"],
+                "description": "Degree name"
+              },
+              "startDate": {
+                "type": ["string", "null"],
+                "description": "Start date in YYYY-MM-DD format"
+              },
+              "endDate": {
+                "type": ["string", "null"],
+                "description": "End date in YYYY-MM-DD format"
+              }
+            }
+          },
+          "default": []
+        },
+        "projects": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": ["string", "null"],
+                "description": "Project name",
+                "default": "Untitled Project"
+              },
+              "description": {
+                "type": ["string", "null"],
+                "description": "Project description",
+                "default": ""
+              },
+              "technologies": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "List of technologies used",
+                "default": []
+              },
+              "link": {
+                "type": ["string", "null"],
+                "description": "Project URL or empty string"
+              }
+            }
+          },
+          "default": []
+        },
+        "skills": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "List of professional skills",
+          "default": []
+        },
+        "socials": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string",
+                "description": "Social platform name"
+              },
+              "url": {
+                "type": ["string", "null"],
+                "description": "Profile URL"
+              }
+            }
+          },
+          "default": []
+        },
+        "updated_at": {
+          "type": ["string", "null"],
+          "format": "date-time",
+          "description": "Last update timestamp"
+        }
+      }
+    }
+} 
