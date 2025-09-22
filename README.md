@@ -1,6 +1,6 @@
 ## Resume Parser API
 
-FastAPI service that converts PDF resumes into structured JSON using MarkItDown for text extraction and OpenAI for normalization. It exposes a small set of authenticated endpoints and comprehensive OpenAPI/Swagger docs.
+FastAPI service that converts PDF and DOCX resumes into structured JSON using MarkItDown for text extraction and OpenAI for normalization. It exposes a small set of authenticated endpoints and comprehensive OpenAPI/Swagger docs.
 
 ### Features
 
