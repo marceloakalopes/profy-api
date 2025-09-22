@@ -19,6 +19,7 @@ class EmploymentType(str, Enum):
     VOLUNTEER = "volunteer"
 
 class Experience(BaseModel):
+    model_config = {"title": "Domain/Experience"}
     company: str | None = None
     title: str | None = None
     location: str | None = "Not specified"
@@ -28,22 +29,26 @@ class Experience(BaseModel):
     description: str | None = ""
 
 class Education(BaseModel):
+    model_config = {"title": "Domain/Education"}
     school: str | None = None
     degree: str | None = None
     startDate: str | None = None
     endDate: str | None = None
 
 class Project(BaseModel):
+    model_config = {"title": "Domain/Project"}
     name: str | None = "Untitled Project"
     description: str | None = ""
     technologies: List[str] = []
     link: str | None = None
 
 class Social(BaseModel):
+    model_config = {"title": "Domain/Social"}
     name: str
     url: str | None = None
 
 class ResumeData(BaseModel):
+    model_config = {"title": "Domain/ResumeData"}
     id: int | None = None
     username: str | None = None
     imageUrl: str | None = None

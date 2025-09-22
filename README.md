@@ -1,136 +1,169 @@
-# Resume Parser API
+## Resume Parser API
 
-A FastAPI-based REST API that parses PDF resumes using OpenAI and MarkItDown to extract structured data.
+FastAPI service that converts PDF resumes into structured JSON using MarkItDown for text extraction and OpenAI for normalization. It exposes a small set of authenticated endpoints and comprehensive OpenAPI/Swagger docs.
 
-## Features
+### Features
 
-- PDF resume parsing and text extraction
-- OpenAI-powered structured data extraction
-- JSON schema validation for parsed data
-- API key authentication
-- CORS support
-- Request processing time tracking
-- Health check endpoint
-- File size and token count limitations
-- Comprehensive error handling and logging
+- **PDF parsing** via MarkItDown
+- **LLM-powered normalization** to a stable schema
+- **Typed responses** with Pydantic models and examples
+- **Uniform error envelope** across all endpoints
+- **CORS** and **API key** authentication
+- **Detailed Swagger** docs with examples and error models
+- **Performance metrics** in response metadata
 
-## Prerequisites
+## Getting Started
 
-- Python 3.x
-- OpenAI API key
-- FastAPI
-- uvicorn
-- Other dependencies (see `requirements.txt`)
+### Prerequisites
 
-## Installation
+- Python 3.10+
+- An OpenAI API key
 
-1. Clone the repository:
+### Installation
+
 ```bash
 git clone <repository-url>
 cd profy-api
-```
-
-2. Install dependencies:
-```bash
+python -m venv .venv && source .venv/bin/activate  # optional but recommended
 pip install -r requirements.txt
 ```
 
-3. Set up environment variables (create a `.env` file):
+### Configuration
+
+Copy `.env.example` to `.env` and adjust values. All settings are optional unless noted:
+
 ```env
-API_KEY=your_api_key_here
-OPENAI_API_KEY=your_openai_api_key_here
-OPENAI_MODEL=gpt-4  # or your preferred model
-MAX_FILE_SIZE=10000000  # in bytes
-MAX_FILE_TOKENS=10000
-ALLOWED_ORIGINS=["http://localhost:3000"]  # adjust as needed
+### OpenAI ###
+OPENAI_API_KEY=                         # Your OpenAI API key. Required to call OpenAI.
+OPENAI_MODEL=gpt-4.1-nano              # Model used by MarkItDown/OpenAI.
+OPENAI_MAX_TOKENS=7000                 # Max tokens for LLM (upper bound; app may use less).
+
+### Security ###
+ALLOWED_ORIGINS=["*"]                  # CORS: list of allowed origins. "*" allows all (dev-friendly).
+
+### API KEY ###
+API_KEYS=["dev-key-1","dev-key-2"]   # Array of accepted API keys.
+API_KEY=                                # Optional legacy single key; still supported.
+
+### Mode ###
+MODE=showcase                           # 'showcase' skips API key enforcement; set to other value for prod.
 ```
 
-## API Endpoints
-
-### Health Check
-```http
-GET /v1/health
-Header: X-API-Key: your_api_key
-```
-Returns the health status of the API and OpenAI connection.
-
-### Parse Resume
-```http
-POST /v1/parse/pdf
-Header: X-API-Key: your_api_key
-Content-Type: multipart/form-data
-Body: file=@resume.pdf
-```
-Parses a PDF resume and returns structured data.
-
-#### Response Format
-```json
-{
-    "success": true,
-    "data": {
-        // Structured resume data based on schema
-    },
-    "metadata": {
-        "file_size": 123456,
-        "model": "gpt-4",
-        "time_to_parse": 1.23,
-        "llm_response_time": 2.34,
-        "total_time": 3.57,
-        "input_tokens": 1000,
-        "output_tokens": 500
-    }
-}
-```
-
-## Error Handling
-
-The API includes comprehensive error handling for:
-- Invalid API keys (403)
-- Invalid file formats (400)
-- File size limits (400)
-- Token count limits (400)
-- Schema validation errors (400)
-- Processing errors (500)
-
-## Development
-
-To run the server in development mode:
+### Running Locally
 
 ```bash
 python main.py
 ```
 
-The server will start at `http://0.0.0.0:8000`.
+The API runs at `http://127.0.0.1:8000`. Visit Swagger UI at `http://127.0.0.1:8000/docs` and the OpenAPI JSON at `http://127.0.0.1:8000/openapi.json`.
 
-## Architecture
+## Authentication
 
-The project consists of several key components:
-- `main.py`: FastAPI application and route handlers
-- `config.py`: Configuration settings and environment variables
-- `prompt_builder.py`: OpenAI prompt construction and handling
-- `schema_validator.py`: JSON schema validation for resume data
-- `schema.json`: Resume data structure definition
+- Header: `X-API-Key: <your key>`
+- In `MODE=showcase`, API key validation is skipped for convenience.
+- For testing, you can use this API key: `1lazk6WGUWua3twKFSKdn65/cNVijyGyHFQgHsyC0fQ=`
 
-## Performance
+## Endpoints
 
-The API includes performance monitoring:
-- Request processing time tracking
-- Token usage monitoring
-- File size validation
-- Response time metrics
+### Health Check
 
-## Security
+```http
+GET /v1/health
+X-API-Key: <your key>
+```
 
-- API key authentication required for all endpoints
-- CORS middleware with configurable origins
-- File size limitations
-- Token count restrictions
-- Temporary file handling with automatic cleanup
+Example success response:
+
+```json
+{
+  "success": true,
+  "status": "healthy",
+  "openai": "connected"
+}
+```
+
+Example error response:
+
+```json
+{
+  "success": false,
+  "status": "unhealthy",
+  "openai": "disconnected",
+  "error": { "code": "openai_unavailable", "message": "..." }
+}
+```
+
+### Parse Resume (PDF)
+
+```http
+POST /v1/parse/pdf
+X-API-Key: <your key>
+Content-Type: multipart/form-data
+Body: file=@resume.pdf
+```
+
+Success response:
+
+```json
+{
+  "success": true,
+  "data": { /* ResumeData fields */ },
+  "metadata": {
+    "file_size": 123456,
+    "model": "gpt-4.1-nano",
+    "time_to_parse": 1.23,
+    "llm_response_time": 0.85,
+    "total_time": 2.08,
+    "input_tokens": 1024,
+    "output_tokens": 256
+  }
+}
+```
+
+### Parse Resume (DOCX)
+
+```http
+POST /v1/parse/docx
+X-API-Key: <your key>
+Content-Type: multipart/form-data
+Body: file=@resume.docx
+```
+
+Response shape is identical to the PDF endpoint.
+
+Error response (uniform across endpoints):
+
+```json
+{
+  "success": false,
+  "error": {
+    "code": "invalid_file_type",
+    "message": "Only PDF files are allowed"
+  }
+}
+```
+
+## Data Models
+
+- `ResumeData`: Structured resume output (see `schema_validator.py` / `schema.json`).
+- `ParsePdfResponse`: Success envelope with `data` and `metadata`.
+- `ErrorResponse`: Error envelope with stable `code` and `message`.
+
+OpenAPI includes embedded examples for these models in the Swagger UI.
+
+## Development
+
+- Start the server: `python main.py`
+- Linting: Pydantic validation errors return a 422 with structured details.
+- CORS: Configure allowed origins via `ALLOWED_ORIGINS`.
+
+## Contribution Guidelines
+
+1. Fork and create a feature branch.
+2. Write clear commits and add tests if applicable.
+3. Ensure Swagger docs remain descriptive: update response models, tags, and examples when changing endpoints.
+4. Open a PR with a summary of changes and screenshots of updated docs.
 
 ## License
 
-[Add your license information here]
-
-## Contributing
-
-[Add contribution guidelines here] 
+MIT (see `LICENSE` if present).

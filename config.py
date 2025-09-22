@@ -21,6 +21,10 @@ class Settings(BaseSettings):
 
     # API Key
     API_KEY: str = Field(default="")
+    API_KEYS: List[str] = Field(default=[])
+
+    # Mode
+    MODE: str = Field(default="showcase")
 
     class Config:
         env_file = ".env"
