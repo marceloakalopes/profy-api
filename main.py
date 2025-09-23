@@ -1,4 +1,13 @@
-from fastapi import FastAPI, HTTPException, UploadFile, File, Security, Request, Depends, status
+from fastapi import (
+    FastAPI,
+    HTTPException,
+    UploadFile,
+    File,
+    Security,
+    Request,
+    Depends,
+    status,
+)
 from fastapi.responses import JSONResponse
 from fastapi.exceptions import RequestValidationError
 import uvicorn
@@ -23,7 +32,9 @@ from models import (
 )
 
 # logging
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+)
 logger = logging.getLogger(__name__)
 
 app = FastAPI(
@@ -75,6 +86,7 @@ UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
 API_KEY_HEADER = "X-API-Key"
 
 api_key_header = APIKeyHeader(name=API_KEY_HEADER, auto_error=False)
+
 
 async def verify_api_key(api_key: str = Security(api_key_header)):
     """
@@ -132,11 +144,19 @@ async def http_exception_handler(request: Request, exc: HTTPException):
 
 
 @app.exception_handler(RequestValidationError)
-async def request_validation_exception_handler(request: Request, exc: RequestValidationError):
+async def request_validation_exception_handler(
+    request: Request, exc: RequestValidationError
+):
     """Handle FastAPI request validation errors (422)."""
-    error = Error(code="validation_error", message="Invalid request parameters", details={"errors": exc.errors()})
+    error = Error(
+        code="validation_error",
+        message="Invalid request parameters",
+        details={"errors": exc.errors()},
+    )
     body = ErrorResponse(success=False, error=error)
-    return JSONResponse(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, content=body.model_dump())
+    return JSONResponse(
+        status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, content=body.model_dump()
+    )
 
 
 @app.exception_handler(Exception)
@@ -145,11 +165,15 @@ async def unhandled_exception_handler(request: Request, exc: Exception):
     logger.exception("Unhandled error: %s", exc)
     error = Error(code="internal_error", message="An unexpected error occurred")
     body = ErrorResponse(success=False, error=error)
-    return JSONResponse(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, content=body.model_dump())
+    return JSONResponse(
+        status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, content=body.model_dump()
+    )
+
 
 @app.get("/")
 def read_root():
     return {"message": "Hello, World!"}
+
 
 @app.post(
     "/v1/parse/pdf",
@@ -217,7 +241,7 @@ async def parse_pdf(
                 if not chunck:
                     break
                 buffer.write(chunck)
-    
+
             # parse the pdf using pymupdf4llm and get the markdown
             parsed = markitdown.convert(dest)
 
@@ -247,9 +271,11 @@ async def parse_pdf(
 
         # time llm response
         llm_response_start_time = time.time()
-        
+
         # get the structured data from LLM
-        structured_data = prompt_builder.get_structured_data({"markdown": parsed.text_content})
+        structured_data = prompt_builder.get_structured_data(
+            {"markdown": parsed.text_content}
+        )
 
         llm_response_time = time.time() - llm_response_start_time
 
@@ -282,7 +308,10 @@ async def parse_pdf(
         except Exception as validation_error:
             # Return validation errors with 400 status
             logger.error(f"Validation error: {validation_error}")
-            raise HTTPException(status_code=400, detail=f"Invalid resume data format: {str(validation_error)}")
+            raise HTTPException(
+                status_code=400,
+                detail=f"Invalid resume data format: {str(validation_error)}",
+            )
 
     except Exception as e:
         logger.error(f"Error parsing file: {e}")
@@ -349,7 +378,10 @@ async def health_check(api_key: str = Depends(verify_api_key)):
     },
 )
 async def parse_docx(
-    file: UploadFile = File(..., description="DOCX file to parse (application/vnd.openxmlformats-officedocument.wordprocessingml.document)"),
+    file: UploadFile = File(
+        ...,
+        description="DOCX file to parse (application/vnd.openxmlformats-officedocument.wordprocessingml.document)",
+    ),
     api_key: str = Depends(verify_api_key),
 ):
     start_time = time.time()
@@ -403,7 +435,9 @@ async def parse_docx(
         prompt_builder = PromptBuilder()
 
         llm_response_start_time = time.time()
-        structured_data = prompt_builder.get_structured_data({"markdown": parsed.text_content})
+        structured_data = prompt_builder.get_structured_data(
+            {"markdown": parsed.text_content}
+        )
         llm_response_time = time.time() - llm_response_start_time
 
         try:
@@ -431,11 +465,13 @@ async def parse_docx(
             return JSONResponse(content=response.model_dump())
         except Exception as validation_error:
             logger.error(f"Validation error: {validation_error}")
-            raise HTTPException(status_code=400, detail=f"Invalid resume data format: {str(validation_error)}")
+            raise HTTPException(
+                status_code=400,
+                detail=f"Invalid resume data format: {str(validation_error)}",
+            )
     except Exception as e:
         logger.error(f"Error parsing file: {e}")
         raise HTTPException(500, f"Error parsing resume: {str(e)}")
-
 
 
 if __name__ == "__main__":
