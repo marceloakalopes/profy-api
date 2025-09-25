@@ -388,6 +388,9 @@ async def parse_docx(
 
     markitdown = MarkItDown(
         model=settings.OPENAI_MODEL,
+        embed_images=False,
+        ocr=False,
+        max_chars=120_000,
     )
 
     if not file.filename:
@@ -475,4 +478,4 @@ async def parse_docx(
 
 
 if __name__ == "__main__":
-    uvicorn.run("main:app", host="0.0.0.0", port=8000, log_level="info", workers=2)
+    uvicorn.run("main:app", host="0.0.0.0", port=8000, log_level="info", workers=1)
