@@ -172,7 +172,7 @@ async def unhandled_exception_handler(request: Request, exc: Exception):
 
 @app.get("/")
 def read_root():
-    return {"message": "Hello, World!"}
+    return {"message": "Visit https://api.profy.me/docs to learn more about the API"}
 
 
 @app.post(
@@ -478,4 +478,4 @@ async def parse_docx(
 
 
 if __name__ == "__main__":
-    uvicorn.run("main:app", host="0.0.0.0", port=8000, log_level="info", workers=1)
+    uvicorn.run("main:app", host="0.0.0.0", port=8000, log_level="info", workers=1, reload=True)
