@@ -163,7 +163,3 @@ OpenAPI includes embedded examples for these models in the Swagger UI.
 2. Write clear commits and add tests if applicable.
 3. Ensure Swagger docs remain descriptive: update response models, tags, and examples when changing endpoints.
 4. Open a PR with a summary of changes and screenshots of updated docs.
-
-## License
-
-MIT (see `LICENSE` if present).
